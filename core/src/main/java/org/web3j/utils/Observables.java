@@ -2,15 +2,15 @@ package org.web3j.utils;
 
 import java.math.BigInteger;
 
-import rx.Observable;
+import io.reactivex.Observable;
+
 
 /**
  * Observable utility functions.
  */
 public class Observables {
 
-    public static Observable<BigInteger> range(
-            final BigInteger startValue, final BigInteger endValue) {
+    public static Observable<BigInteger> range(BigInteger startValue, BigInteger endValue) {
         return range(startValue, endValue, true);
     }
 
@@ -18,12 +18,13 @@ public class Observables {
      * Simple Observable implementation to emit a range of BigInteger values.
      *
      * @param startValue first value to emit in range
-     * @param endValue final value to emit in range
-     * @param ascending direction to iterate through range
+     * @param endValue   final value to emit in range
+     * @param ascending  direction to iterate through range
      * @return Observable to emit this range of values
      */
-    public static Observable<BigInteger> range(
-            final BigInteger startValue, final BigInteger endValue, final boolean ascending) {
+    public static Observable<BigInteger> range(BigInteger startValue,
+                                               BigInteger endValue,
+                                               boolean ascending) {
         if (startValue.compareTo(BigInteger.ZERO) == -1) {
             throw new IllegalArgumentException("Negative start index cannot be used");
         } else if (startValue.compareTo(endValue) > 0) {
@@ -35,26 +36,26 @@ public class Observables {
             return Observable.create(subscriber -> {
                 for (BigInteger i = startValue;
                         i.compareTo(endValue) < 1
-                             && !subscriber.isUnsubscribed();
-                        i = i.add(BigInteger.ONE)) {
+                             && !subscriber.isDisposed();
+                                i = i.add(BigInteger.ONE)) {
                     subscriber.onNext(i);
                 }
 
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onCompleted();
+                if (!subscriber.isDisposed()) {
+                    subscriber.onComplete();
                 }
             });
         } else {
             return Observable.create(subscriber -> {
                 for (BigInteger i = endValue;
                         i.compareTo(startValue) > -1
-                             && !subscriber.isUnsubscribed();
-                        i = i.subtract(BigInteger.ONE)) {
+                             && !subscriber.isDisposed();
+                                i = i.subtract(BigInteger.ONE)) {
                     subscriber.onNext(i);
                 }
 
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onCompleted();
+                if (!subscriber.isDisposed()) {
+                    subscriber.onComplete();
                 }
             });
         }

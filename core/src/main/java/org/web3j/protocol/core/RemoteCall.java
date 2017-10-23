@@ -3,7 +3,7 @@ package org.web3j.protocol.core;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-import rx.Observable;
+import io.reactivex.Observable;
 
 import org.web3j.utils.Async;
 
@@ -49,7 +49,7 @@ public class RemoteCall<T> {
                 subscriber -> {
                     try {
                         subscriber.onNext(send());
-                        subscriber.onCompleted();
+                        subscriber.onComplete();
                     } catch (Exception e) {
                         subscriber.onError(e);
                     }

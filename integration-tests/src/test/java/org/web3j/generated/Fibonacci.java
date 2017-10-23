@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import io.reactivex.Observable;
+
 import org.web3j.abi.EventEncoder;
 import org.web3j.abi.EventValues;
 import org.web3j.abi.TypeReference;
@@ -22,8 +25,6 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.exceptions.TransactionException;
 import org.web3j.tx.Contract;
 import org.web3j.tx.TransactionManager;
-import rx.Observable;
-import rx.functions.Func1;
 
 /**
  * <p>Auto generated code.
@@ -66,15 +67,12 @@ public final class Fibonacci extends Contract {
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {}, new TypeReference<Uint256>() {}));
         EthFilter filter = new EthFilter(startBlock, endBlock, getContractAddress());
         filter.addSingleTopic(EventEncoder.encode(event));
-        return web3j.ethLogObservable(filter).map(new Func1<Log, NotifyEventResponse>() {
-            @Override
-            public NotifyEventResponse call(Log log) {
-                EventValues eventValues = extractEventParameters(event, log);
-                NotifyEventResponse typedResponse = new NotifyEventResponse();
-                typedResponse.input = (BigInteger) eventValues.getNonIndexedValues().get(0).getValue();
-                typedResponse.result = (BigInteger) eventValues.getNonIndexedValues().get(1).getValue();
-                return typedResponse;
-            }
+        return web3j.ethLogObservable(filter).map(log -> {
+            EventValues eventValues = extractEventParameters(event, log);
+            NotifyEventResponse typedResponse = new NotifyEventResponse();
+            typedResponse.input = (BigInteger) eventValues.getNonIndexedValues().get(0).getValue();
+            typedResponse.result = (BigInteger) eventValues.getNonIndexedValues().get(1).getValue();
+            return typedResponse;
         });
     }
 

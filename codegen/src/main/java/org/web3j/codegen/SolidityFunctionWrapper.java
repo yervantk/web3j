@@ -18,7 +18,6 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
-import rx.functions.Func1;
 
 import org.web3j.abi.EventEncoder;
 import org.web3j.abi.EventValues;
@@ -486,8 +485,8 @@ public class SolidityFunctionWrapper extends Generator {
     }
 
     TypeSpec buildEventResponseObject(String className,
-                                             List<NamedTypeName> indexedParameters,
-                                             List<NamedTypeName> nonIndexedParameters) {
+                                      List<NamedTypeName> indexedParameters,
+                                      List<NamedTypeName> nonIndexedParameters) {
 
         TypeSpec.Builder builder = TypeSpec.classBuilder(className)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
@@ -506,15 +505,15 @@ public class SolidityFunctionWrapper extends Generator {
     }
 
     MethodSpec buildEventObservableFunction(String responseClassName,
-                                                   String functionName,
-                                                   List<NamedTypeName> indexedParameters,
-                                                   List<NamedTypeName> nonIndexedParameters)
+                                            String functionName,
+                                            List<NamedTypeName> indexedParameters,
+                                            List<NamedTypeName> nonIndexedParameters)
             throws ClassNotFoundException {
 
         String generatedFunctionName =
                 Strings.lowercaseFirstLetter(functionName) + "EventObservable";
-        ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(ClassName.get(rx
-                .Observable.class), ClassName.get("", responseClassName));
+        ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(ClassName.get(
+                io.reactivex.Observable.class), ClassName.get("", responseClassName));
 
         MethodSpec.Builder observableMethodBuilder = MethodSpec.methodBuilder(generatedFunctionName)
                 .addModifiers(Modifier.PUBLIC)
@@ -527,10 +526,10 @@ public class SolidityFunctionWrapper extends Generator {
 
         TypeSpec converter = TypeSpec.anonymousClassBuilder("")
                 .addSuperinterface(ParameterizedTypeName.get(
-                        ClassName.get(Func1.class),
+                        ClassName.get(io.reactivex.functions.Function.class),
                         ClassName.get(Log.class),
                         ClassName.get("", responseClassName)))
-                .addMethod(MethodSpec.methodBuilder("call")
+                .addMethod(MethodSpec.methodBuilder("apply")
                         .addAnnotation(Override.class)
                         .addModifiers(Modifier.PUBLIC)
                         .addParameter(Log.class, "log")
@@ -556,7 +555,7 @@ public class SolidityFunctionWrapper extends Generator {
 
     MethodSpec buildEventTransactionReceiptFunction(String responseClassName, String
             functionName, List<NamedTypeName> indexedParameters, List<NamedTypeName>
-                                                                   nonIndexedParameters) throws
+                                                            nonIndexedParameters) throws
             ClassNotFoundException {
 
         ParameterizedTypeName parameterizedTypeName = ParameterizedTypeName.get(
@@ -622,8 +621,8 @@ public class SolidityFunctionWrapper extends Generator {
     }
 
     CodeBlock buildTypedResponse(String objectName,
-                                        List<NamedTypeName> indexedParameters,
-                                        List<NamedTypeName> nonIndexedParameters) {
+                                 List<NamedTypeName> indexedParameters,
+                                 List<NamedTypeName> nonIndexedParameters) {
         String nativeConversion;
 
         if (useNativeJavaTypes) {

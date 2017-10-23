@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import rx.Observable;
+import io.reactivex.Observable;
 
 import org.web3j.protocol.Web3jService;
 

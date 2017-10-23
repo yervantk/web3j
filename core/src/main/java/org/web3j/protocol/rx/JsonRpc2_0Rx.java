@@ -6,19 +6,20 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
-import rx.Observable;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.Subscriptions;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
 
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.DefaultBlockParameterNumber;
 import org.web3j.protocol.core.filters.BlockFilter;
+import org.web3j.protocol.core.filters.Filter;
 import org.web3j.protocol.core.filters.LogFilter;
 import org.web3j.protocol.core.filters.PendingTransactionFilter;
+import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.EthBlock;
 import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.Transaction;
@@ -56,9 +57,8 @@ public class JsonRpc2_0Rx {
         });
     }
 
-    public Observable<Log> ethLogObservable(
-            org.web3j.protocol.core.methods.request.EthFilter ethFilter, long pollingInterval) {
-        return Observable.create((Subscriber<? super Log> subscriber) -> {
+    public Observable<Log> ethLogObservable(EthFilter ethFilter, long pollingInterval) {
+        return Observable.create(subscriber -> {
             LogFilter logFilter = new LogFilter(
                     web3j, subscriber::onNext, ethFilter);
 
@@ -67,11 +67,12 @@ public class JsonRpc2_0Rx {
     }
 
     private <T> void run(
-            org.web3j.protocol.core.filters.Filter<T> filter, Subscriber<? super T> subscriber,
+            Filter<T> filter,
+            ObservableEmitter<? super T> subscriber,
             long pollingInterval) {
 
         filter.run(scheduledExecutorService, pollingInterval);
-        subscriber.add(Subscriptions.create(filter::cancel));
+        subscriber.setCancellable(filter::cancel);
     }
 
     public Observable<Transaction> transactionObservable(long pollingInterval) {

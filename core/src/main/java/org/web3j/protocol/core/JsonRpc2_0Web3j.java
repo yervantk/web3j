@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.ScheduledExecutorService;
 
-import rx.Observable;
+import io.reactivex.Observable;
 
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jService;

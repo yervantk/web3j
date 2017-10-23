@@ -4,10 +4,11 @@ import java.math.BigInteger;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+
 import org.junit.Before;
 import org.junit.Test;
-import rx.Observable;
-import rx.Subscription;
 
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.request.EthFilter;
@@ -79,15 +80,15 @@ public class ObservableIT {
         CountDownLatch countDownLatch = new CountDownLatch(EVENT_COUNT);
         CountDownLatch completedLatch = new CountDownLatch(EVENT_COUNT);
 
-        Subscription subscription = observable.subscribe(
+        Disposable subscription = observable.subscribe(
                 x -> countDownLatch.countDown(),
                 Throwable::printStackTrace,
                 completedLatch::countDown
         );
 
         countDownLatch.await(5, TimeUnit.MINUTES);
-        subscription.unsubscribe();
+        subscription.dispose();
         completedLatch.await(1, TimeUnit.SECONDS);
-        assertTrue(subscription.isUnsubscribed());
+        assertTrue(subscription.isDisposed());
     }
 }

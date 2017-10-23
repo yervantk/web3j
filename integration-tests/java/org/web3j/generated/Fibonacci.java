@@ -21,8 +21,8 @@ import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tx.Contract;
 import org.web3j.tx.TransactionManager;
-import rx.Observable;
-import rx.functions.Func1;
+import rx.reactivex.Observable;
+import rx.reactivex.functions.Func1;
 
 /**
  * Auto generated code.<br>

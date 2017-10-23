@@ -1,6 +1,6 @@
 package org.web3j.protocol.rx;
 
-import rx.Observable;
+import io.reactivex.Observable;
 
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.methods.request.EthFilter;
